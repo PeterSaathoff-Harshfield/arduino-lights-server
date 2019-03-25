@@ -7,11 +7,15 @@ private:
     int green;
     int blue;
     
+//    int hue
+    
 public:
   Arbitrary() : Mode() {
       int red = 64;
       int green = 64;
       int blue = 64;
+      
+//      int hue = 
   }
   
   ~Arbitrary() {}
@@ -57,4 +61,32 @@ public:
         }
         blue = b;
     }
+    
+    void setHue(int h) {
+        int subh = h % 256;
+        if (h >= 0 && h < 256) {
+            red = 256 - subh;
+            green = subh;
+            blue = 0;
+        }
+        else if (h > 255 && h < 512) {
+            red = 0;
+            green = 256 - subh;
+            blue = subh;
+        }
+        else if (h > 511 && h < 768) {
+            red = subh;
+            green = 0;
+            blue = 256 - subh;
+        }
+        
+//        hue = h;
+//        if (hue >= 768) {
+//            hue = 768;
+//        }
+//        else if (hue < 0) {
+//            hue = 0;
+//        }
+    }
+    
 };

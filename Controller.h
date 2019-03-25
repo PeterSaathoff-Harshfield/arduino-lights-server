@@ -134,6 +134,12 @@ public:
     void setGradientRate(int gradientRate) {
         modes[4]->setRate(gradientRate);
     }
+    void setGradientBrightness(int gradientBrightness) {
+        modes[4]->setBrightness(gradientBrightness);
+    }
+    void setRedPulseRate(int redRate) {
+        modes[7]->setRate(redRate);
+    }
     void setArbitraryR(int red) {
         modes[8]->setR(red);
     }
@@ -142,6 +148,9 @@ public:
     }
     void setArbitraryB(int blue) {
         modes[8]->setB(blue);
+    }
+    void setArbitraryHue(int hue) {
+        modes[8]->setHue(hue);
     }
     
     void jsonState(char response[], int responseLength) {
@@ -162,7 +171,7 @@ public:
 //        Serial.println(powerButtonString);
         
 
-        snprintf(response, responseLength, "{\"powerStatus\": \"%s\", \"powerButtonText\": \"%s\", \"r\": %d, \"g\": %d, \"b\": %d, \"whiteBrightness\": %d, \"solidColor\": %d, \"randomRate\": %d, \"randomMaxBrightness\": %d, \"spectrumRate\": %d, \"spectrumBrightness\": %d, \"gradientState\": %d, \"gradientRate\": %d, \"flowRate\": %d, \"flowMaxBrightness\": %d}", onString, powerButtonString, r, g, b, modes[1]->getBrightness(), modes[3]->getColorMode(), modes[5]->getRate(), modes[5]->getMaxBrightness(), modes[2]->getRate(), modes[2]->getMaxBrightness(), modes[4]->getState(), modes[4]->getRate(), modes[6]->getRate(), modes[6]->getMaxBrightness());
+        snprintf(response, responseLength, "{\"powerStatus\": \"%s\", \"powerButtonText\": \"%s\", \"r\": %d, \"g\": %d, \"b\": %d, \"modeIndex\": %d, \"whiteBrightness\": %d, \"solidColor\": %d, \"randomRate\": %d, \"randomMaxBrightness\": %d, \"spectrumRate\": %d, \"spectrumBrightness\": %d, \"gradientState\": %d, \"gradientRate\": %d, \"gradientBrightness\": %d, \"flowRate\": %d, \"flowMaxBrightness\": %d, \"redPulseRate\": %d}", onString, powerButtonString, r, g, b, currentMode,  modes[1]->getBrightness(), modes[3]->getColorMode(), modes[5]->getRate(), modes[5]->getMaxBrightness(), modes[2]->getRate(), modes[2]->getMaxBrightness(), modes[4]->getState(), modes[4]->getRate(), modes[4]->getBrightness(), modes[6]->getRate(), modes[6]->getMaxBrightness(), modes[7]->getRate());
 
     }
 };

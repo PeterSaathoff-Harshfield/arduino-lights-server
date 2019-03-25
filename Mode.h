@@ -28,9 +28,11 @@ public:
     virtual void setR(int r) {}
     virtual void setG(int g) {}
     virtual void setB(int b) {}
+    virtual void setHue(int h) {}
     
     virtual int getBrightness() {}
     virtual int getColorMode() {}
+    virtual void getColors(int colorArray[][3]) {}
     virtual int getRate() {}
     virtual int getMaxBrightness() {}
     virtual int getState() {}

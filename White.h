@@ -8,14 +8,14 @@ private:
 public:
     
   White() : Mode() {
-    brightness = 100;
+    brightness = 50;
   }
   
   ~White() {}
   
   void get(long now, int rgb[]) {
     for (int i = 0; i < 3; i++) {
-      rgb[i] = brightness;
+      rgb[i] = int(brightness * 2.55);
     }
   }
   
@@ -24,25 +24,25 @@ public:
         if (brightness < 0) {
             brightness = 0;
         }
-        else if (brightness > 255) {
-            brightness = 255;
+        else if (brightness > 99) {
+            brightness = 99;
         }
 
     }
     
   void adjust(char direction) {
     if (direction == 'l') {
-      brightness -= 16;
+      brightness -= 10;
     }
     else if (direction == 'r') {
-      brightness += 16;
+      brightness += 10;
     }
   
     if (brightness < 0) {
       brightness = 0;
     }
-    else if (brightness > 255) {
-      brightness = 255;
+    else if (brightness > 99) {
+      brightness = 99;
     }
   
     Serial.print("white level: ");

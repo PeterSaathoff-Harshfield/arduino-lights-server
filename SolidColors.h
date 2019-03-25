@@ -62,4 +62,9 @@ public:
     int getColorMode() {
         return colorState;
     }
+    
+    void getColors(int colorArray[][3]) {
+        
+       colorArray = colors;
+    }
 };

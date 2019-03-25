@@ -4,53 +4,63 @@ class Spectrum: public Mode {
 private:
     int rate;
     int brightness;
+    
+    int sr;
+    int sg;
+    int sb;
+    int smode;
+    
 public:
 	Spectrum() : Mode() {
-	  rate = 20;
-        brightness = 63;
+	  rate = 25;
+      brightness = 99;
+        
+        sr = 255;
+        sg = 0;
+        sb = 0;
+        smode = 0;
 	}
   
   void get(long now, int rgb[]) {
-      int n_steps = 999;
-      int step = (now/rate) % n_steps;
       
-      int s = step % int(n_steps/3);
-      
-      if (step >= 0 && step < int(n_steps/3)) {
-          rgb[0] = int(brightness - brightness * s / (n_steps/3));
-//          Serial.print("red    ");
-//          Serial.println(rgb[0]);
-          rgb[1] = int(brightness * s / (n_steps/3));
-//          Serial.print("green    ");
-//          Serial.println(rgb[1]);
-          rgb[2] = 0;
+      if (now % 2 == 0) {
+          
+          int step = int(float(rate)/20.0);
+          
+          if (smode == 0) {
+              sr -= step;
+              sg += step;
+              if (sr <= 0) {
+                  sr = 0;
+                  sg = 255;
+                  smode = 1;
+              }
+          }
+          else if (smode == 1) {
+              sg -= step;
+              sb += step;
+              if (sg <= 0) {
+                  sg = 0;
+                  sb = 255;
+                  smode = 2;
+              }
+          }
+          else { // smode == 2
+              sb -= step;
+              sr += step;
+              if (sb <= 0) {
+                  sb = 0;
+                  sr = 255;
+                  smode = 0;
+              }
+          }
+          
+          float scalar = float(brightness) / 100.0;
+          
+          rgb[0] = int(sr * scalar);
+          rgb[1] = int(sg * scalar);
+          rgb[2] = int(sb * scalar);
       }
-      else if (step >= int(n_steps/3) && step < 2*int(n_steps/3)) {
-          rgb[0] = 0;
-          rgb[1] = int(brightness - brightness * s / (n_steps/3));
-          rgb[2] = int(brightness * s / (n_steps/3));
-      }
-      else if (step >= 2*int(n_steps/3) && step < n_steps) {
-          rgb[0] = int(brightness * s / (n_steps/3));
-          rgb[1] = 0;
-          rgb[2] = int(brightness - brightness * s / (n_steps/3));
-      }
-      // original code, assumes n_steps = 768
-//    if (step >= 0 && step < 256) {
-//      rgb[0] = 255 - s;
-//      rgb[1] = s;
-//      rgb[2] = 0;
-//    }
-//    else if (step >= 256 && step < 512) {
-//      rgb[0] = 0;
-//      rgb[1] = 255 - s;
-//      rgb[2] = s;
-//    }
-//    else if (step >= 512 && step < 768) {
-//      rgb[0] = s;
-//      rgb[1] = 0;
-//      rgb[2] = 255 - s;
-//    }
   }
   
   void adjust(char direction) {
@@ -61,11 +71,11 @@ public:
       rate -= 10;
     }
   
-    if (rate < 5) {
-      rate = 5;
+    if (rate < 1) {
+      rate = 1;
     }
-    else if (rate > 500) {
-      rate = 500;
+    else if (rate > 100) {
+      rate = 100;
     }
   
     Serial.print("spectrum rate: ");
@@ -73,20 +83,21 @@ public:
   }
   void setRate(int level) {
       rate = level;
-      if (rate < 5) {
-          rate = 5;
+      if (rate < 1) {
+          rate = 1;
       }
-      else if (rate > 500) {
-          rate = 500;
+      else if (rate > 100) {
+          rate = 100;
       }
   }
+    
     void setBrightness(int _brightness) {
         brightness = _brightness;
-        if (brightness < 10) {
-            brightness = 10;
+        if (brightness < 5) {
+            brightness = 5;
         } 
-        else if (brightness > 255) {
-            brightness = 255;
+        else if (brightness > 99) {
+            brightness = 99;
         }
     }
     

@@ -8,8 +8,8 @@
 #include "Light.h"
 
 int redPin = 3;
-int greenPin = 6;
-int bluePin = 5;
+int greenPin = 5;
+int bluePin = 6;
 
 Light light(redPin, greenPin, bluePin);
 Controller controller = Controller();
@@ -103,15 +103,11 @@ void loop() {
     
     currentTime = millis();
     if (lastTime < currentTime - 20) {
-      
       controller.update(currentTime);
-      
       light.set(controller.r, controller.g, controller.b);
-      
       lastTime = millis();
+      light.display();
     }
-    
-    light.display();
   }
   else {
     light.set(0, 0, 0);
@@ -127,6 +123,7 @@ void loop() {
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     
+    String entireHeader = "";
     String url = "";
     boolean gotPathLine = false;
     
@@ -135,17 +132,19 @@ void loop() {
         char c = client.read();
         
         if (!gotPathLine) {
-          url += c;          
+          url += c;
         }
+        entireHeader += c;
         
         if (c == '\n' && currentLineIsBlank) {
+          Serial.println(url);
           url = url.substring(4, url.length()-11);
           Serial.println(url);
           
           char b[128];
           
           String path;
-          String whiteLevel;
+          // String whiteLevel;
   
           int c1 = 0;
           char* token1;
@@ -160,10 +159,21 @@ void loop() {
             //   path = String(t1);
             //   Serial.println(path);
             // }
+            
             path = String(t1);
+            if (path == "/json") {
+              client.println(jsonHeader);
+              controller.jsonState(jsonResponse, sizeof(jsonResponse));
+              // Serial.println(jsonResponse);
+              client.println(jsonResponse);
+              // Serial.println("doing json thing");
+            }
             if (path == "/powerToggle") {
               // Serial.println("this should be toggling power");
+              // Serial.println("toggling power");
               controller.powerToggle();
+              Serial.println("doing power thing");
+              delay(1);
             }
             if (path == "/white") {
               // Serial.println("found white");
@@ -229,7 +239,7 @@ void loop() {
               // Serial.println(value);
       
               if (key == "white") {
-                whiteLevel = value;
+                // whiteLevel = value;
                 int br = value.toInt();
                 controller.setWhite(br);
               }
@@ -250,7 +260,7 @@ void loop() {
                 int sr = value.toInt();
                 controller.setSpectrumRate(sr);
               }
-              if (key == "spectrumbrightness") {
+              if (key == "spectrummax") {
                 int sb = value.toInt();
                 controller.setSpectrumBrightness(sb);
               }
@@ -262,14 +272,23 @@ void loop() {
                 int gr = value.toInt();
                 controller.setGradientRate(gr);
               }
+              if (key == "gradientbrightness") {
+                int gb = value.toInt();
+                controller.setGradientBrightness(gb);
+                Serial.println(gb);
+              }
               if (key == "flowrate") {
                 int fr = value.toInt();
                 controller.setFlowRate(fr);
               }
               if (key == "flowmax") {
                 int fm = value.toInt();
-                Serial.println("got flow max!!!");
+                // Serial.println("got flow max!!!");
                 controller.setFlowMaxBrightness(fm);
+              }
+              if (key == "redpulserate") {
+                int rpr = value.toInt();
+                controller.setRedPulseRate(rpr);
               }
               if (key == "arbitraryr") {
                 int ar = value.toInt();
@@ -283,11 +302,15 @@ void loop() {
                 int ab = value.toInt();
                 controller.setArbitraryB(ab);
               }
+              if (key == "arbitraryhue") {
+                int ah = value.toInt();
+                controller.setArbitraryHue(ah);
+              }
       
               t2 = strtok_r(NULL, "&", &token2);
               c2++;
             }
-            t1 =strtok_r(NULL, "?", &token1);
+            t1 = strtok_r(NULL, "?", &token1);
             c1++;
           }
   
@@ -339,14 +362,11 @@ void loop() {
               controller.adjustMode('r');
             }
             
-            
-            // if (path == "/josn") {
-            // }
-            
-            client.println(jsonHeader);
-            controller.jsonState(jsonResponse, sizeof(jsonResponse));
-            Serial.println(jsonResponse);
-            client.println(jsonResponse);
+
+            // client.println(jsonHeader);
+            // controller.jsonState(jsonResponse, sizeof(jsonResponse));
+            // // Serial.println(jsonResponse);
+            // client.println(jsonResponse);
             
           }
           
@@ -357,12 +377,14 @@ void loop() {
           // you're starting a new line
           currentLineIsBlank = true;
           gotPathLine = true;
-        } else if (c != '\r') {
+        }
+        else if (c != '\r') {
           // you've gotten a character on the current line
           currentLineIsBlank = false;
         }
       }
     }
+    Serial.println(entireHeader);
     // give the web browser time to receive the data
     delay(1);
 
@@ -375,6 +397,14 @@ void loop() {
 
   }
 }
+
+
+
+void handleUrl(char* url) {
+  
+}
+
+
 
 
 // void buildJsonResponse() {
@@ -392,6 +422,8 @@ void loop() {
 //   sprintf(r, "{\"number\": %d, \"powerStatus\": \"%s\", \"powerButtonText\": \"%s\", \"r\": %d, \"g\": %d, \"b\": %d}", number, onString, powerButtonString, controller.r, controller.g, controller.b);
 //   jsonResponse = r;
 // }
+
+
 
 
 void printWifiStatus() {
